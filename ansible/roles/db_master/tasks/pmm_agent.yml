@@ -1,0 +1,7 @@
+---
+- name: Set up PMM agent
+  shell: "pmm-admin config --server-insecure-tls --server-url=https://admin:password@172.17.17.31:443"
+
+- name: Add MySQL service
+  shell: "pmm-admin add mysql --query-source=perfschema --username=pmm --password='pmm_Password1!'"
+  

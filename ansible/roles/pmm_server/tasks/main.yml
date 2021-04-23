@@ -1,0 +1,4 @@
+---
+- include_tasks: docker_cleanup.yml
+- include_tasks: start_pmm.yml
+- include_tasks: set_admin_password.yml

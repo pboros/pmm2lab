@@ -1,0 +1,3 @@
+---
+- name: Clean up running docker containers
+  shell: "for cid in $(docker ps -a | awk '{print $1}' | grep -v CONT) ; do docker rm -f ${cid} ; done"

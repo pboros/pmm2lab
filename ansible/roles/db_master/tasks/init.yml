@@ -1,0 +1,42 @@
+---
+- name: Capture error log output
+  shell: "grep temporary {{ mysql_config['mysqld']['log_error'] }}"
+  register: temporary_error_log_output
+
+- name: Get mysql temp root password
+  set_fact:
+    mysql_temp_root_password: "{{ temporary_error_log_output.stdout_lines | get_temp_password }}"
+
+- name: Debug mysql temp root password
+  debug:
+    var: mysql_temp_root_password
+
+- name: Fail if temp root password is empty
+  fail:
+    msg: "Could not get temporary root password"
+  when: mysql_temp_root_password|length == 0
+
+- name: Start mysqld
+  systemd:
+    name: mysqld
+    state: started
+
+- name: Check if the temp root password can connect
+  shell: "mysql -u root -p'{{ mysql_temp_root_password }}' --connect-expired-password -e 'SELECT 1'"
+  register: mysql_temp_password_can_connect
+  changed_when: false
+  ignore_errors: true
+
+- name: Check must reset message
+  fail:
+    msg: "MySQL temp root password connection failed in an unknown way"
+  when: "{{ 'ALTER' not in mysql_temp_password_can_connect.stderr }}"
+
+- name: Set root password to the configured one
+  shell: "mysql -u root -p'{{ mysql_temp_root_password }}' --connect-expired-password -e \"ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ mysql_config['client']['password'] }}'\""
+  when: mysql_temp_password_can_connect.rc != 0
+
+- name: Restart mysql
+  systemd:
+    name: mysql
+    state: restarted

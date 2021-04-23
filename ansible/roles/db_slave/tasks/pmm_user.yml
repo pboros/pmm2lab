@@ -1,0 +1,7 @@
+---
+- name: Add user for pmm_agent
+  mysql_user:
+    name: pmm
+    host: localhost
+    password: pmm_Password1!
+    priv: '*.*:SELECT,PROCESS,SUPER,REPLICATION CLIENT,RELOAD'

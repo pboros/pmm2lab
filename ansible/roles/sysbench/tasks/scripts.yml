@@ -1,0 +1,19 @@
+---
+- name: Test db creation script
+  template:
+    src: create_test_db.sh.j2
+    dest: /root/create_test_db.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Script for running sysbench
+  template:
+    src: run_sysbench.sh.j2
+    dest: /root/run_sysbench.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Run test db creation
+  shell: "/root/create_test_db.sh"

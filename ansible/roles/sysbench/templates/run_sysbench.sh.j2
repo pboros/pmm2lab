@@ -1,0 +1,15 @@
+#!/bin/bash
+
+sysbench /usr/share/sysbench/oltp_update_non_index.lua \
+    --threads=25 \
+    --mysql-host=db1.pmm2lab.172.17.17.11.nip.io \
+    --mysql-user=sbtest_user \
+    --mysql-password=sbtest_password \
+    --mysql-port=3306 \
+    --tables=10 \
+    --table-size=100000 \
+    --time=0 \
+    --report-interval=1 \
+    --max_requests=0 \
+    --rate=10 \
+    run
